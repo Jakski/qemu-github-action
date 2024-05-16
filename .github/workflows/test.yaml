@@ -22,12 +22,14 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
-          key: {{ matrix.image_url }}
+          key: ${{ matrix.image_url }}
           path: |
             ci-instance/image.qcow2
 
       - name: Launch instance
         uses: ./
+        with:
+          image_url: ${{ matrix.image_url }}
 
       - name: Test SSH connection
         run: ssh -F ci-instance/ssh_config ci-instance echo Hello
