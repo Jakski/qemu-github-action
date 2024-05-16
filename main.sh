@@ -170,6 +170,7 @@ run_instance() {
 		--same-dir \
 		-- \
 		qemu-system-x86_64 \
+		-cpu max \
 		-m "$QEMU_INSTANCE_MEMORY" \
 		-smp "$QEMU_INSTANCE_CPU" \
 		-netdev user,id=user0,hostfwd=tcp:127.0.0.1:"$QEMU_INSTANCE_SSH_PORT"-:22 \
@@ -182,7 +183,6 @@ run_instance() {
 		-chardev socket,id=char0,path=console.socket,logfile=console.log,server=on,wait=off \
 		-serial chardev:char0 \
 		-nographic \
-		-nodefaults \
 		-pidfile pid.txt
 }
 
