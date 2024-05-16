@@ -1,0 +1,27 @@
+name: test
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
+      - LICENSE
+      - .gitignore
+jobs:
+  defaults:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          key: defaults
+          path: |
+            ci-instance/image.qcow2
+
+      - name: Launch instance
+        uses: ./
+
+      - name: Test SSH connection
+        run: ssh -F ci-instance/ssh_config ci-instance echo Hello

@@ -1,0 +1,37 @@
+name: QEMU instance
+author: Jakub Pieńkowski
+description: Launch a QEMU instance with user networking as a systemd service
+inputs:
+  name:
+    description: Hostname and systemd service name
+    default: ci-instance
+  extra_size:
+    description: How much to enlarge disk, e.g. 10G
+    default: 10G
+  memory:
+    description: Memory expressed in megabytes
+    default: 1024
+  cpu:
+    description: Virtual CPUs quantity
+    default: 1
+  image_url:
+    description: URL to QCOW2 image
+    default: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
+  dir:
+    description: Directory where instance data will be placed
+    default: ci-instance
+  ssh_port:
+    description: Port number on local machine to forward to remote SSH
+    default: 8022
+  ssh_user:
+    description: User for SSH and sudo access
+    default: ci-instance
+  shell:
+    description: Path to shell for SSH user
+    default: /bin/bash
+runs:
+  using: composite
+  steps:
+    - name: Start QEMU instance
+      run: ${{ github.action_path }}/main.sh
+      shell: bash
