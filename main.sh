@@ -130,9 +130,14 @@ local-hostname: ${QEMU_INSTANCE_NAME}
 users:
   - name: ${QEMU_INSTANCE_SSH_USER}
     sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: false
+    passwd: '*'
     shell: ${QEMU_INSTANCE_SHELL}
     ssh_authorized_keys:
       - ${public_key[0]}
+packages:
+  - sudo
+  - bash
 " >user-data
 	genisoimage -quiet -output cidata.iso -volid cidata -joliet -rock user-data meta-data
 }
@@ -169,6 +174,7 @@ run_instance() {
 		-smp "$QEMU_INSTANCE_CPU" \
 		-netdev user,id=user0,hostfwd=tcp:127.0.0.1:"$QEMU_INSTANCE_SSH_PORT"-:22 \
 		-device virtio-net-pci,netdev=user0 \
+		-device virtio-rng-pci \
 		-drive file=rootfs.qcow2,format=qcow2,id=disk0,if=none,index=0 \
 		-device virtio-blk-pci,drive=disk0,bootindex=1 \
 		-drive file=cidata.iso,format=raw,if=virtio \

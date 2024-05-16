@@ -8,7 +8,13 @@ on:
       - LICENSE
       - .gitignore
 jobs:
-  defaults:
+  test:
+    strategy:
+      matrix:
+        image_url:
+          - https://dl-cdn.alpinelinux.org/alpine/v3.19/releases/cloud/nocloud_alpine-3.19.1-x86_64-bios-cloudinit-r0.qcow2
+          - https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
+          - https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,7 +22,7 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
-          key: defaults
+          key: {{ matrix.image_url }}
           path: |
             ci-instance/image.qcow2
 
