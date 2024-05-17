@@ -13,6 +13,7 @@
 #   - QEMU_INSTANCE_SSH_USER - User for SSH and sudo access
 #   - QEMU_INSTANCE_NAME - Hostname and systemd service name
 #   - QEMU_INSTANCE_SHELL - Path to shell for SSH user
+#   - QEMU_INSTANCE_KVM - Set to 1 in order to use KVM acceleration
 #
 # Data directory layout:
 #   - cidata.iso - Cloud Init provisioning disk
@@ -41,6 +42,7 @@ shopt -s inherit_errexit nullglob lastpipe
 [ -v QEMU_INSTANCE_SSH_USER ] || declare QEMU_INSTANCE_SSH_USER="ci-instance"
 [ -v QEMU_INSTANCE_NAME ] || declare QEMU_INSTANCE_NAME="ci-instance"
 [ -v QEMU_INSTANCE_SHELL ] || declare QEMU_INSTANCE_SHELL="/bin/bash"
+[ -v QEMU_INSTANCE_KVM ] || declare QEMU_INSTANCE_KVM=0
 
 on_exit() {
 	declare cmd=$BASH_COMMAND exit_code=$? i=0 line=""
@@ -143,6 +145,7 @@ packages:
 }
 
 run_instance() {
+	declare -a opts=()
 	printf "%s\n" "Creating copy-on-write instance image"
 	if systemctl --user list-unit-files "${QEMU_INSTANCE_NAME}.service" >/dev/null; then
 		printf "%s\n" "Removing previously running instance"
@@ -163,6 +166,9 @@ run_instance() {
 	if [ -v QEMU_INSTANCE_EXTRA_SIZE ]; then
 		qemu-img resize -q rootfs.qcow2 "+${QEMU_INSTANCE_EXTRA_SIZE}"
 	fi
+	if [ "$QEMU_INSTANCE_KVM" = 1 ]; then
+		opts+=(-accel kvm)
+	fi
 	printf "%s\n" "Starting instance"
 	systemd-run \
 		--user \
@@ -170,6 +176,7 @@ run_instance() {
 		--same-dir \
 		-- \
 		qemu-system-x86_64 \
+		"${opts[@]}" \
 		-cpu max \
 		-m "$QEMU_INSTANCE_MEMORY" \
 		-smp "$QEMU_INSTANCE_CPU" \

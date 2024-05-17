@@ -29,9 +29,23 @@ inputs:
   shell:
     description: Path to shell for SSH user
     default: /bin/bash
+  kvm:
+    description: Set to 1 in order to use KVM acceleration
+    default: 0
 runs:
   using: composite
   steps:
     - name: Start QEMU instance
       run: ${{ github.action_path }}/main.sh
       shell: bash
+      env:
+        QEMU_INSTANCE_EXTRA_SIZE: ${{ inputs.extra_size }}
+        QEMU_INSTANCE_MEMORY: ${{ inputs.memory }}
+        QEMU_INSTANCE_CPU: ${{ inputs.cpu }}
+        QEMU_INSTANCE_IMAGE_URL: ${{ inputs.image_url }}
+        QEMU_INSTANCE_DIR: ${{ inputs.dir }}
+        QEMU_INSTANCE_SSH_PORT: ${{ inputs.ssh_port }}
+        QEMU_INSTANCE_SSH_USER: ${{ inputs.ssh_user }}
+        QEMU_INSTANCE_NAME: ${{ inputs.name }}
+        QEMU_INSTANCE_SHELL: ${{ inputs.shell }}
+        QEMU_INSTANCE_KVM: ${{ inputs.kvm }}
