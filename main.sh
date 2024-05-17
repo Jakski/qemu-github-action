@@ -187,8 +187,8 @@ run_instance() {
 }
 
 wait_for_ssh() {
+	printf "%s\n" "Waiting for SSH"
 	while ! timeout 1 ssh -F ssh_config "$QEMU_INSTANCE_NAME" echo -n 2>&1; do
-		printf "%s\n" "Waiting for SSH"
 		sleep 1
 	done
 }
