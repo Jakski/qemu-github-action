@@ -94,8 +94,10 @@ install_dependencies() {
 	fi
 	if [ "${#pkgs[@]}" != 0 ]; then
 		if [ "$UID" != 0 ]; then
+			sudo apt-get update -y
 			sudo apt-get install -y "${pkgs[@]}"
 		else
+			apt-get update
 			apt-get install -y "${pkgs[@]}"
 		fi
 	fi
